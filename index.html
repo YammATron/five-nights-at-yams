@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080908">
+  <meta name="description" content="Survive five shifts at Yam's Sniff & Slice. Four familiar faces. A very unfamiliar night.">
+  <title>Five Nights at Yams</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="intro.js" defer></script>
+  <script src="game-engine.js" defer></script>
+  <script src="game-audio.js" defer></script>
+  <script src="game-ui.js" defer></script>
+</head>
+<body>
+  <main id="experience" class="experience" data-mode="ready" data-phase="ready" data-audio-state="idle">
+    <div class="portrait-layer" aria-hidden="true">
+      <img id="shadow-portrait" class="shadow-portrait" src="assets/shadow-yam.png" alt="" decoding="async">
+    </div>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="frame-lines" aria-hidden="true"></div>
+
+    <header class="frame-header">
+      <span class="archive-label"><span class="status-dot" aria-hidden="true"></span> AFTER HOURS</span>
+      <div class="transport">
+        <button id="mute-button" class="quiet-button sound-button" type="button" aria-label="Mute sound" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3Z"/><path class="sound-waves" d="M16 8c2 2 2 6 0 8M19 5c4 4 4 10 0 14"/></svg>
+          <span id="sound-label">Sound on</span>
+        </button>
+        <button id="skip-button" class="quiet-button" type="button" hidden>Skip intro <span aria-hidden="true">↗</span></button>
+      </div>
+    </header>
+
+    <section id="title-panel" class="title-panel" aria-labelledby="game-title">
+      <p class="eyebrow">The night shift begins.</p>
+      <h1 id="game-title" tabindex="-1"><span class="title-small">FIVE NIGHTS</span><span class="title-large"><em>at</em> YAMS<span class="title-dot">.</span></span></h1>
+      <div class="title-details">
+        <p class="tagline">Four familiar faces.<br>A very unfamiliar night.</p>
+        <div id="ready-actions" class="actions">
+          <button id="begin-button" class="primary-button" type="button" disabled>Begin intro <span aria-hidden="true">→</span></button>
+          <button id="skip-opening" class="text-button" type="button">Skip to main menu</button>
+          <p id="loading-status" class="small-note" role="status">Preparing the portrait…</p>
+        </div>
+        <div id="menu-actions" class="actions" hidden>
+          <button id="new-game" class="primary-button" type="button" disabled>New Game <span aria-hidden="true">→</span></button>
+          <button id="continue-game" class="primary-button" type="button" disabled>Continue</button>
+          <button id="gallery-button" class="text-button" type="button">Meet the Yams</button>
+          <button id="instructions-button" class="text-button" type="button">How to survive</button>
+          <button id="replay-button" class="text-button" type="button">Replay intro</button>
+          <p id="save-status" class="small-note">Preparing the night shift…</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="frame-footer">
+      <span class="footer-note">YAM'S SNIFF &amp; SLICE <span class="footer-divider" aria-hidden="true">/</span> EST. AFTER DARK</span>
+      <span id="film-counter" class="film-counter" aria-hidden="true">00 : 00</span>
+      <span id="film-caption" class="film-caption" aria-hidden="true">KEEP LOOKING.</span>
+    </footer>
+    <div id="film-progress" class="film-progress" aria-hidden="true"></div>
+    <span id="screen-reader-status" class="visually-hidden" aria-live="polite"></span>
+  </main>
+
+  <section id="game" class="game" hidden aria-label="Night shift" data-view="office" data-status="idle">
+    <div id="office-scene" class="office-scene" aria-hidden="true">
+      <div class="office-background"></div>
+      <div class="room-shadow"></div>
+      <div class="doorway doorway-left"><div class="door-light-beam"></div><img id="left-visitor" class="door-visitor" src="assets/long-yam.png" alt=""><div class="shutter"></div></div>
+      <div class="doorway doorway-right"><div class="door-light-beam"></div><img id="right-visitor" class="door-visitor" src="assets/wide-yam.png" alt=""><div class="shutter"></div></div>
+      <div id="blackout-face" class="blackout-face"><img src="assets/shadow-yam.png" alt=""></div>
+    </div>
+
+    <div id="monitor-panel" class="monitor-panel" hidden aria-label="Security camera monitor">
+      <div id="camera-background" class="camera-background" aria-hidden="true"></div>
+      <div id="camera-occupants" class="camera-occupants" aria-hidden="true">
+        <img data-enemy="long" src="assets/long-yam.png" alt="">
+        <img data-enemy="wide" src="assets/wide-yam.png" alt="">
+        <img data-enemy="bulb" src="assets/bulb-yam.png" alt="">
+        <img data-enemy="shadow" src="assets/shadow-yam.png" alt="">
+      </div>
+      <div class="camera-scanlines" aria-hidden="true"></div>
+      <div class="camera-border" aria-hidden="true"></div>
+      <div class="camera-heading"><span class="live-dot" aria-hidden="true"></span><span>NOSECAM</span><span id="camera-code">CAM 01</span></div>
+      <h2 id="camera-room-name">Sniff Stage</h2>
+      <p id="camera-description" class="camera-description" aria-live="polite"></p>
+      <p id="cove-stage" class="cove-stage" hidden></p>
+      <nav class="camera-map" aria-label="Choose a camera">
+        <div class="map-title">SNIFF &amp; SLICE / FLOOR PLAN</div>
+        <svg class="map-connections" viewBox="0 0 260 210" aria-hidden="true"><path d="M132 28V62M132 62H48V97M132 62H211V97M48 97V139M211 97V139M132 62V97M132 97V174M48 139H132H211M211 103H132V139H48" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <button class="cam-button cam-stage" data-camera="stage" type="button" aria-pressed="true">01<span>Stage</span></button>
+        <button class="cam-button cam-dining" data-camera="dining" type="button" aria-pressed="false">02<span>Dining</span></button>
+        <button class="cam-button cam-storage" data-camera="storage" type="button" aria-pressed="false">03<span>Storage</span></button>
+        <button class="cam-button cam-cove" data-camera="cove" type="button" aria-pressed="false">04<span>Yam Cove</span></button>
+        <button class="cam-button cam-left-hall" data-camera="left-hall" type="button" aria-pressed="false">05<span>Left hall</span></button>
+        <button class="cam-button cam-right-hall" data-camera="right-hall" type="button" aria-pressed="false">06<span>Right hall</span></button>
+        <button class="cam-button cam-right-corner" data-camera="right-corner" type="button" aria-pressed="false">07<span>Right corner</span></button>
+        <span class="map-office">YOU</span>
+      </nav>
+    </div>
+
+    <header class="night-header">
+      <div class="night-brand">YAM'S SNIFF &amp; SLICE <span>EMPLOYEE #0001</span></div>
+      <div class="night-time"><span id="night-number">Night 1</span><strong id="night-clock">12 AM</strong></div>
+    </header>
+    <div class="game-toolbar">
+      <button id="game-mute" class="game-quiet" type="button" aria-pressed="false">Sound on</button>
+      <button id="pause-game" class="game-quiet" type="button">Pause <kbd>Esc</kbd></button>
+    </div>
+    <div id="left-controls" class="side-controls left-controls">
+      <span class="side-label">LEFT ENTRY</span>
+      <button id="left-door" class="door-button" type="button" aria-pressed="false"><span class="control-led"></span>Door <kbd>Q</kbd></button>
+      <button id="left-light" class="light-button" type="button" aria-pressed="false"><span class="control-led"></span>Light <kbd>A</kbd></button>
+    </div>
+    <div id="right-controls" class="side-controls right-controls">
+      <span class="side-label">RIGHT ENTRY</span>
+      <button id="right-door" class="door-button" type="button" aria-pressed="false"><span class="control-led"></span>Door <kbd>E</kbd></button>
+      <button id="right-light" class="light-button" type="button" aria-pressed="false"><span class="control-led"></span>Light <kbd>D</kbd></button>
+    </div>
+    <p id="sound-cue" class="sound-cue" role="status"></p>
+    <p id="night-tip" class="night-tip"></p>
+    <footer class="night-footer">
+      <div class="power-panel"><span>YAM POWER <strong id="power-value">100%</strong></span><div class="power-track"><div id="power-fill"></div></div><div class="usage-row">USAGE <span id="usage-meter" class="usage-meter"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div>
+      <div class="office-look" aria-label="Look around"><button data-look="left" type="button" aria-label="Look left">←</button><button data-look="center" type="button" aria-label="Look straight ahead">·</button><button data-look="right" type="button" aria-label="Look right">→</button></div>
+      <button id="monitor-button" class="monitor-button" type="button" aria-pressed="false"><span id="monitor-label">Raise NoseCam</span><kbd>Space</kbd><span aria-hidden="true">⌃</span></button>
+    </footer>
+    <span id="game-status-reader" class="visually-hidden" aria-live="polite"></span>
+  </section>
+
+  <div id="jumpscare" class="jumpscare" hidden aria-label="Jumpscare"><img id="jumpscare-image" src="assets/shadow-yam.png" alt=""><div class="jump-grain" aria-hidden="true"></div></div>
+  <section id="night-result" class="night-result" hidden aria-labelledby="result-title">
+    <p id="result-eyebrow" class="eyebrow">END OF SHIFT</p><h2 id="result-title" tabindex="-1">6 AM</h2><p id="result-message"></p><p id="result-hint"></p>
+    <div class="result-actions"><button id="next-night" class="primary-button" type="button">Next Night <span aria-hidden="true">→</span></button><button id="retry-night" class="primary-button" type="button">Retry Night</button><button id="result-menu" class="text-button" type="button">Main Menu</button></div>
+  </section>
+
+  <dialog id="night-brief" class="shift-dialog" aria-labelledby="brief-title"><p class="eyebrow">YOUR NEXT SHIFT</p><h2 id="brief-title">Night 1</h2><p id="brief-flavor"></p><div class="shift-rules"><p><b>Check the cameras.</b> They show where the Yams actually are.</p><p><b>Check the lights.</b> Close the correct door when a nose is waiting outside.</p><p><b>Save your power.</b> Leave the doors open when the way is clear.</p></div><p class="small-note">12 AM – 6 AM · About four minutes · Sudden sounds</p><div class="dialog-actions"><button id="start-shift" class="primary-button" type="button">Start Night 1 <span aria-hidden="true">→</span></button><button id="cancel-shift" class="text-button" type="button">Back to Menu</button></div></dialog>
+
+  <dialog id="pause-dialog" class="shift-dialog" aria-labelledby="pause-title"><p class="eyebrow">ON YOUR OWN TIME</p><h2 id="pause-title">Shift paused.</h2><p id="pause-note">Time, power, and every Yam are paused.</p><p class="pause-keys">Q / E — left / right door<br>A / D — left / right light<br>Space — camera monitor<br>1–7 — camera selection<br>← / → — look around</p><div class="dialog-actions"><button id="resume-game" class="primary-button" type="button">Resume Shift <span aria-hidden="true">→</span></button><button id="pause-mute" class="text-button" type="button" aria-pressed="false">Sound on</button><button id="quit-game" class="text-button" type="button">Main Menu</button></div></dialog>
+
+  <dialog id="instructions-dialog" class="shift-dialog instructions-dialog" aria-labelledby="instructions-title"><p class="eyebrow">EMPLOYEE ORIENTATION</p><h2 id="instructions-title">Keep your nose<br>out of trouble.</h2><p>Survive from 12 AM until 6 AM. Cameras, lights, and closed doors all use power. At zero, your defenses fail.</p><dl><dt>Long Yam / left</dt><dd>A doorway light reveals him. Shut the left door until he leaves.</dd><dt>Wide Yam / right</dt><dd>He likes to linger. Check the right light and open the door once he retreats.</dd><dt>Bulb Yam / Yam Cove</dt><dd>Regular camera use calms him. Watch his preparation stages. If he runs, close the left door fast.</dd><dt>Shadow Yam / right route</dt><dd>Watching his room slows him. Track Stage → Dining → Right Hall → Right Corner. The doorway light won't reveal him. Close the right door at his final approach.</dd></dl><p class="small-note">Controls: Q/E doors · A/D lights · Space cameras · 1–7 feeds · Arrow keys look · Esc pause. Buttons work with mouse or touch. Leaving the tab automatically pauses.</p><button id="close-instructions" class="primary-button" type="button">Got it <span aria-hidden="true">→</span></button></dialog>
+
+  <dialog id="character-gallery" class="gallery" aria-labelledby="gallery-title">
+    <div class="gallery-shell">
+      <header class="gallery-header">
+        <div><p class="eyebrow">Four faces after midnight</p><h2 id="gallery-title">Meet the <em>Yams.</em></h2></div>
+        <button id="close-gallery" class="quiet-button" type="button">Close <span aria-hidden="true">×</span></button>
+      </header>
+      <div class="character-grid">
+        <article class="character-card">
+          <div class="character-photo"><img src="assets/long-yam.png" alt="Long Yam: the first portrait, with an oversized elongated nose and strong side shadows." loading="lazy"><span class="character-number" aria-hidden="true">01</span></div>
+          <div class="character-caption"><h3>Long Yam</h3><p>A silhouette that reaches first.</p></div>
+        </article>
+        <article class="character-card">
+          <div class="character-photo"><img src="assets/wide-yam.png" alt="Wide Yam: the second portrait, with a broad flattened nose and warm frontal lighting." loading="lazy"><span class="character-number" aria-hidden="true">02</span></div>
+          <div class="character-caption"><h3>Wide Yam</h3><p>Hard to miss. Harder to forget.</p></div>
+        </article>
+        <article class="character-card">
+          <div class="character-photo"><img src="assets/bulb-yam.png" alt="Bulb Yam: the third portrait, with a huge round projecting nose tip." loading="lazy"><span class="character-number" aria-hidden="true">03</span></div>
+          <div class="character-caption"><h3>Bulb Yam</h3><p>Closer than he looks.</p></div>
+        </article>
+        <article class="character-card">
+          <div class="character-photo"><img src="assets/shadow-yam.png" alt="Shadow Yam: the fourth portrait, with a heavy oversized nose, underlighting, and a looming shadow overhead." loading="lazy"><span class="character-number" aria-hidden="true">04</span></div>
+          <div class="character-caption"><h3>Shadow Yam</h3><p>The light doesn't help.</p></div>
+        </article>
+      </div>
+      <p class="gallery-footer">THE SAME FACE. SOMETHING DIFFERENT EVERY TIME.</p>
+    </div>
+  </dialog>
+  <noscript><p class="noscript-message">Enable JavaScript to play the intro. The four PNG portraits are in the assets folder.</p></noscript>
+</body>
+</html>
